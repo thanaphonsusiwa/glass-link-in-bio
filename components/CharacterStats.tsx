@@ -3,38 +3,47 @@
 import { motion } from "framer-motion";
 import { CHARACTER } from "@/lib/constants";
 
-export default function CharacterStats() {
-  const stats = [
-    { label: "Age", value: `${CHARACTER.age}` },
-    { label: "HT", value: `${CHARACTER.height} cm` },
-    { label: "WT", value: `${CHARACTER.weight} kg` },
-  ];
+// Compact stat items separated by thin dividers — professional data card style
+const STATS = [
+  { label: "AGE", value: String(CHARACTER.age) },
+  { label: "HT",  value: `${CHARACTER.height}` },
+  { label: "WT",  value: `${CHARACTER.weight}` },
+];
 
+export default function CharacterStats() {
   return (
     <motion.aside
-      className="absolute left-3 bottom-24 z-20"
-      initial={{ opacity: 0, x: -16 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.5, delay: 0.3, ease: "easeOut" }}
+      className="absolute left-4 bottom-20 z-20"
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.55, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
     >
       <div
-        className="rounded-2xl px-3 py-2.5 flex flex-col gap-1"
+        className="rounded-xl px-3.5 py-2.5"
         style={{
-          background: "rgba(255,255,255,0.18)",
-          backdropFilter: "blur(16px)",
-          WebkitBackdropFilter: "blur(16px)",
-          border: "1px solid rgba(255,255,255,0.35)",
-          boxShadow: "0 4px 20px rgba(0,0,0,0.12)",
+          background: "rgba(10,10,10,0.45)",
+          backdropFilter: "blur(20px)",
+          WebkitBackdropFilter: "blur(20px)",
+          border: "1px solid rgba(255,255,255,0.14)",
+          boxShadow: "0 8px 32px rgba(0,0,0,0.3)",
         }}
       >
-        <p className="text-[10px] font-semibold text-white/60 tracking-widest uppercase leading-none mb-0.5">
-          {CHARACTER.role}
-        </p>
-        <div className="flex gap-3">
-          {stats.map((s) => (
-            <div key={s.label} className="flex flex-col items-center">
-              <span className="text-sm font-bold text-white leading-tight">{s.value}</span>
-              <span className="text-[9px] text-white/50 uppercase tracking-wider">{s.label}</span>
+        {/* Stat row: value · divider · value · divider · value */}
+        <div className="flex items-center gap-2.5">
+          {STATS.map((s, i) => (
+            <div key={s.label} className="flex items-center gap-2.5">
+              <div className="flex flex-col items-center">
+                <span className="text-[15px] font-semibold text-white leading-none">
+                  {s.value}
+                </span>
+                <span className="text-[8px] font-medium tracking-[0.18em] text-white/40 uppercase mt-0.5">
+                  {s.label}
+                </span>
+              </div>
+              {/* Thin divider between stats */}
+              {i < STATS.length - 1 && (
+                <div className="w-px h-5 bg-white/20 rounded-full" />
+              )}
             </div>
           ))}
         </div>

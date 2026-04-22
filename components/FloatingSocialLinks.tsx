@@ -1,14 +1,16 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useMotionValue, useTransform, animate } from "framer-motion";
+import { useEffect, useRef } from "react";
 import { SOCIAL_LINKS } from "@/lib/constants";
 
-// Absolute positions for each icon — scattered left & right of the character
+// Each icon: which side, base top %, and orbit phase offset (0–1)
+// Phase controls how far up/down they drift as the character spins
 const POSITIONS = [
-  { side: "right", top: "28%" },  // TikTok — right, upper
-  { side: "right", top: "48%" },  // Instagram — right, mid
-  { side: "left",  top: "28%" },  // YouTube — left, upper
-  { side: "left",  top: "48%" },  // Facebook — left, mid
+  { side: "right", top: "32%", phase: 0    },  // TikTok
+  { side: "right", top: "54%", phase: 0.5  },  // Instagram
+  { side: "left",  top: "32%", phase: 0.25 },  // YouTube
+  { side: "left",  top: "54%", phase: 0.75 },  // Facebook
 ] as const;
 
 interface FloatingIconProps {
@@ -18,10 +20,17 @@ interface FloatingIconProps {
   color: string;
   index: number;
   position: typeof POSITIONS[number];
+  spinPct: number;
 }
 
-function FloatingIcon({ href, label, icon, color, index, position }: FloatingIconProps) {
+function FloatingIcon({ href, label, icon, color, index, position, spinPct }: FloatingIconProps) {
   const isRight = position.side === "right";
+
+  // Orbit offset: each icon traces a subtle ellipse as spinPct changes
+  // amplitude 12px vertical, 4px horizontal — feels like orbiting
+  const angle = (spinPct + position.phase) * Math.PI * 2;
+  const orbitX = Math.sin(angle) * (isRight ? -4 : 4);
+  const orbitY = Math.cos(angle) * 12;
 
   return (
     <motion.a
@@ -29,44 +38,55 @@ function FloatingIcon({ href, label, icon, color, index, position }: FloatingIco
       target="_blank"
       rel="noopener noreferrer"
       aria-label={label}
-      className="absolute z-20 flex flex-col items-center gap-1"
+      className="absolute z-20 flex flex-col items-center gap-1.5"
       style={{
         top: position.top,
-        [position.side]: "10px",
+        [position.side]: "12px",
       }}
-      initial={{ opacity: 0, x: isRight ? 20 : -20, scale: 0.85 }}
-      animate={{ opacity: 1, x: 0, scale: 1 }}
-      transition={{ delay: 0.4 + index * 0.1, duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-      whileTap={{ scale: 0.9 }}
+      initial={{ opacity: 0, x: isRight ? 24 : -24, scale: 0.8 }}
+      animate={{
+        opacity: 1,
+        x: orbitX,
+        y: orbitY,
+        scale: 1,
+      }}
+      transition={{
+        opacity: { delay: 0.5 + index * 0.12, duration: 0.5, ease: [0.22, 1, 0.36, 1] },
+        scale:   { delay: 0.5 + index * 0.12, duration: 0.5, ease: [0.22, 1, 0.36, 1] },
+        x: { type: "spring", stiffness: 80, damping: 20 },
+        y: { type: "spring", stiffness: 80, damping: 20 },
+      }}
+      whileTap={{ scale: 0.88 }}
     >
-      {/* Bob up-down, each icon at a different phase */}
+      {/* Idle bob — runs on top of the orbit offset */}
       <motion.div
-        animate={{ y: [0, -5, 0] }}
+        className="flex flex-col items-center gap-1.5"
+        animate={{ y: [0, -4, 0] }}
         transition={{
-          delay: index * 0.5,
-          duration: 3,
+          delay: index * 0.6,
+          duration: 3.2,
           repeat: Infinity,
           ease: "easeInOut",
         }}
-        className="flex flex-col items-center gap-1"
       >
-        {/* App icon — white square with brand-color icon, just like a real phone */}
+        {/* App icon — clean white card like iOS */}
         <div
-          className="w-12 h-12 rounded-[14px] flex items-center justify-center"
+          className="w-[52px] h-[52px] rounded-[14px] flex items-center justify-center"
           style={{
-            background: "rgba(255,255,255,0.95)",
-            boxShadow: "0 4px 16px rgba(0,0,0,0.22), 0 1px 4px rgba(0,0,0,0.12)",
+            background: "rgba(255,255,255,0.96)",
+            boxShadow:
+              "0 8px 24px rgba(0,0,0,0.25), 0 2px 6px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.8)",
           }}
         >
-          <svg viewBox="0 0 24 24" className="w-6 h-6" fill={color}>
+          <svg viewBox="0 0 24 24" className="w-[26px] h-[26px]" fill={color}>
             <path d={icon} />
           </svg>
         </div>
 
         {/* Label */}
         <span
-          className="text-[9px] font-medium text-white/80 tracking-wide drop-shadow"
-          style={{ textShadow: "0 1px 4px rgba(0,0,0,0.6)" }}
+          className="text-[9px] font-semibold text-white/75 tracking-wider"
+          style={{ textShadow: "0 1px 6px rgba(0,0,0,0.7)" }}
         >
           {label}
         </span>
@@ -75,7 +95,11 @@ function FloatingIcon({ href, label, icon, color, index, position }: FloatingIco
   );
 }
 
-export default function FloatingSocialLinks() {
+interface FloatingSocialLinksProps {
+  spinPct: number;
+}
+
+export default function FloatingSocialLinks({ spinPct }: FloatingSocialLinksProps) {
   return (
     <>
       {SOCIAL_LINKS.slice(0, 4).map((link, i) => (
@@ -84,6 +108,7 @@ export default function FloatingSocialLinks() {
           {...link}
           index={i}
           position={POSITIONS[i]}
+          spinPct={spinPct}
         />
       ))}
     </>

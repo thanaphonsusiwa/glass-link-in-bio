@@ -51,10 +51,10 @@ export function useDragScrub(
 
       const deltaX = e.clientX - startX.current;
       const deltaTime = deltaX / pixelsPerSecond;
-      const newTime = startTime.current + deltaTime;
+      const raw = startTime.current + deltaTime;
 
-      // Clamp to [0, duration]
-      video.currentTime = Math.max(0, Math.min(video.duration, newTime));
+      // Wrap around seamlessly — drag past end loops back to start and vice versa
+      video.currentTime = ((raw % video.duration) + video.duration) % video.duration;
     },
     [videoRef, pixelsPerSecond]
   );
