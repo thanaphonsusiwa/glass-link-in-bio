@@ -5,93 +5,115 @@ import { motion } from "framer-motion";
 import VideoScrubber from "@/components/VideoScrubber";
 import CharacterStats from "@/components/CharacterStats";
 import FloatingSocialLinks from "@/components/FloatingSocialLinks";
-import GlitchOverlay from "@/components/GlitchOverlay";
-import { CHARACTER, THEME } from "@/lib/constants";
 
 export default function Home() {
-  const [spinPct, setSpinPct] = useState(0); // 0–1 based on video progress
+  const [spinPct, setSpinPct] = useState(0);
 
   return (
-    // Outer shell: full viewport, mobile 9:16 centered
-    <main className="flex items-center justify-center w-screen h-dvh bg-black overflow-hidden">
-      {/*
-       * Inner stage: max 430px wide, full height on mobile.
-       * On desktop this creates a phone-sized card.
-       */}
-      <div
-        className="relative w-full max-w-[430px] h-full overflow-hidden"
-        style={{ background: THEME.dark }}
-      >
-        {/* ── 360° drag-to-spin video ── */}
+    <main className="flex items-center justify-center w-screen h-dvh bg-white overflow-hidden">
+      <div className="relative w-full max-w-[430px] h-full overflow-hidden bg-black">
+
+        {/* ── Full-screen video (drag to spin) ── */}
         <VideoScrubber onProgress={setSpinPct} />
 
-        {/* ── Random glitch fx ── */}
-        <GlitchOverlay />
+        {/* ── Floating app icons around character ── */}
+        <FloatingSocialLinks />
 
-        {/* ── Character stats side-panel ── */}
+        {/* ── Compact stats card ── */}
         <CharacterStats />
 
-        {/* ── Top HUD: name + rotation readout ── */}
-        <TopHUD spinPct={spinPct} />
+        {/* ── Top-left name tag ── */}
+        <NameTag />
 
-        {/* ── Social link tray at bottom ── */}
-        <FloatingSocialLinks />
+        {/* ── Bottom spin hint ── */}
+        <SpinHint spinPct={spinPct} />
       </div>
     </main>
   );
 }
 
-// ─── Top HUD ─────────────────────────────────────────────────────────────────
+// ─── Name tag — top left, clean & professional ────────────────────────────────
 
-function TopHUD({ spinPct }: { spinPct: number }) {
-  const angleDeg = Math.round(spinPct * 360);
-
+function NameTag() {
   return (
-    <motion.header
-      className="absolute top-0 inset-x-0 z-20 flex items-center justify-between px-4 pt-4 pb-2"
-      style={{
-        background: "linear-gradient(to bottom, rgba(0,0,0,0.65) 0%, transparent 100%)",
-      }}
-      initial={{ opacity: 0, y: -16 }}
+    <motion.div
+      className="absolute top-0 left-0 z-20 px-4 pt-5 pb-2"
+      initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: "easeOut" }}
     >
-      {/* Left: character name + class */}
-      <div className="flex flex-col">
-        <span
-          className="text-xl font-black tracking-widest uppercase leading-none"
-          style={{
-            color: THEME.primary,
-            textShadow: `0 0 14px ${THEME.primary}`,
-            fontFamily: "var(--font-geist-mono), monospace",
-          }}
-        >
-          {CHARACTER.name}
-        </span>
-        <span className="text-[9px] font-mono tracking-[0.4em] text-white/40 uppercase">
-          {CHARACTER.role}
-        </span>
-      </div>
-
-      {/* Right: live rotation angle */}
-      <div
-        className="flex flex-col items-end px-3 py-1.5 rounded-lg"
-        style={{
-          background: THEME.panelBg,
-          border: `1px solid ${THEME.panelBorder}`,
-          backdropFilter: "blur(10px)",
-        }}
+      <h1
+        className="text-lg font-semibold leading-tight text-white tracking-wide"
+        style={{ textShadow: "0 1px 8px rgba(0,0,0,0.5)" }}
       >
-        <span className="text-[8px] font-mono tracking-widest text-cyan-400/50 uppercase">
-          Rotation
-        </span>
-        <span
-          className="text-base font-mono font-bold leading-none"
-          style={{ color: THEME.primary, textShadow: `0 0 8px ${THEME.primary}` }}
-        >
-          {angleDeg}°
-        </span>
-      </div>
-    </motion.header>
+        Glass Thanaphon Susiwa
+      </h1>
+      <p className="text-[11px] text-white/55 tracking-widest mt-0.5">
+        Content Creator
+      </p>
+    </motion.div>
+  );
+}
+
+// ─── Spin hint — circular arrow indicator at bottom ───────────────────────────
+
+function SpinHint({ spinPct }: { spinPct: number }) {
+  // Fade out after user starts scrubbing
+  const hasStarted = spinPct > 0.01;
+
+  return (
+    <motion.div
+      className="absolute bottom-6 inset-x-0 z-20 flex flex-col items-center gap-1.5 pointer-events-none"
+      animate={{ opacity: hasStarted ? 0 : 1 }}
+      transition={{ duration: 0.4 }}
+    >
+      {/* Circular arrows SVG */}
+      <motion.svg
+        width="36"
+        height="36"
+        viewBox="0 0 36 36"
+        fill="none"
+        animate={{ rotate: [0, 360] }}
+        transition={{ duration: 6, repeat: Infinity, ease: "linear" }}
+      >
+        {/* Left arc */}
+        <path
+          d="M6 18 A12 12 0 0 1 18 6"
+          stroke="rgba(255,255,255,0.8)"
+          strokeWidth="2.2"
+          strokeLinecap="round"
+        />
+        {/* Left arrowhead */}
+        <path
+          d="M18 6 L15 2 M18 6 L14 7"
+          stroke="rgba(255,255,255,0.8)"
+          strokeWidth="2.2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+        {/* Right arc */}
+        <path
+          d="M30 18 A12 12 0 0 1 18 30"
+          stroke="rgba(255,255,255,0.8)"
+          strokeWidth="2.2"
+          strokeLinecap="round"
+        />
+        {/* Right arrowhead */}
+        <path
+          d="M18 30 L21 34 M18 30 L22 29"
+          stroke="rgba(255,255,255,0.8)"
+          strokeWidth="2.2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </motion.svg>
+
+      <span
+        className="text-[10px] font-medium text-white/60 tracking-widest"
+        style={{ textShadow: "0 1px 4px rgba(0,0,0,0.5)" }}
+      >
+        Drag to spin
+      </span>
+    </motion.div>
   );
 }

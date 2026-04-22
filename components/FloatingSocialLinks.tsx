@@ -3,18 +3,25 @@
 import { motion } from "framer-motion";
 import { SOCIAL_LINKS } from "@/lib/constants";
 
-interface SocialButtonProps {
+// Absolute positions for each icon — scattered left & right of the character
+const POSITIONS = [
+  { side: "right", top: "28%" },  // TikTok — right, upper
+  { side: "right", top: "48%" },  // Instagram — right, mid
+  { side: "left",  top: "28%" },  // YouTube — left, upper
+  { side: "left",  top: "48%" },  // Facebook — left, mid
+] as const;
+
+interface FloatingIconProps {
   href: string;
   label: string;
   icon: string;
   color: string;
-  glow: string;
   index: number;
+  position: typeof POSITIONS[number];
 }
 
-function SocialButton({ href, label, icon, color, glow, index }: SocialButtonProps) {
-  // Each button floats at a different phase so they feel alive independently
-  const floatDelay = index * 0.4;
+function FloatingIcon({ href, label, icon, color, index, position }: FloatingIconProps) {
+  const isRight = position.side === "right";
 
   return (
     <motion.a
@@ -22,83 +29,63 @@ function SocialButton({ href, label, icon, color, glow, index }: SocialButtonPro
       target="_blank"
       rel="noopener noreferrer"
       aria-label={label}
-      className="relative flex flex-col items-center gap-1.5 group"
-      initial={{ opacity: 0, y: 30, scale: 0.8 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ delay: 0.3 + index * 0.12, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-      whileTap={{ scale: 0.88 }}
+      className="absolute z-20 flex flex-col items-center gap-1"
+      style={{
+        top: position.top,
+        [position.side]: "10px",
+      }}
+      initial={{ opacity: 0, x: isRight ? 20 : -20, scale: 0.85 }}
+      animate={{ opacity: 1, x: 0, scale: 1 }}
+      transition={{ delay: 0.4 + index * 0.1, duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+      whileTap={{ scale: 0.9 }}
     >
-      {/* Float animation wrapper */}
+      {/* Bob up-down, each icon at a different phase */}
       <motion.div
-        animate={{ y: [0, -6, 0] }}
+        animate={{ y: [0, -5, 0] }}
         transition={{
-          delay: floatDelay,
-          duration: 2.8,
+          delay: index * 0.5,
+          duration: 3,
           repeat: Infinity,
           ease: "easeInOut",
         }}
-        className="relative"
+        className="flex flex-col items-center gap-1"
       >
-        {/* Glow ring */}
-        <motion.div
-          className="absolute inset-0 rounded-full blur-md"
-          style={{ background: glow }}
-          animate={{ opacity: [0.4, 0.8, 0.4], scale: [1, 1.15, 1] }}
-          transition={{ delay: floatDelay, duration: 2.8, repeat: Infinity, ease: "easeInOut" }}
-        />
-
-        {/* Icon button */}
+        {/* App icon — white square with brand-color icon, just like a real phone */}
         <div
-          className="relative w-14 h-14 rounded-2xl flex items-center justify-center transition-transform duration-150 group-hover:scale-110"
+          className="w-12 h-12 rounded-[14px] flex items-center justify-center"
           style={{
-            background: "rgba(10,10,20,0.7)",
-            border: `1.5px solid ${color}55`,
-            backdropFilter: "blur(10px)",
-            boxShadow: `0 0 20px ${glow}, inset 0 0 10px rgba(255,255,255,0.04)`,
+            background: "rgba(255,255,255,0.95)",
+            boxShadow: "0 4px 16px rgba(0,0,0,0.22), 0 1px 4px rgba(0,0,0,0.12)",
           }}
         >
-          <svg
-            viewBox="0 0 24 24"
-            className="w-6 h-6"
-            fill={color}
-            xmlns="http://www.w3.org/2000/svg"
-          >
+          <svg viewBox="0 0 24 24" className="w-6 h-6" fill={color}>
             <path d={icon} />
           </svg>
         </div>
-      </motion.div>
 
-      {/* Label */}
-      <span
-        className="text-[9px] font-mono tracking-widest uppercase opacity-60 group-hover:opacity-100 transition-opacity"
-        style={{ color }}
-      >
-        {label}
-      </span>
+        {/* Label */}
+        <span
+          className="text-[9px] font-medium text-white/80 tracking-wide drop-shadow"
+          style={{ textShadow: "0 1px 4px rgba(0,0,0,0.6)" }}
+        >
+          {label}
+        </span>
+      </motion.div>
     </motion.a>
   );
 }
 
 export default function FloatingSocialLinks() {
   return (
-    <div className="absolute bottom-10 inset-x-0 z-20 flex justify-center">
-      {/* ── Glassmorphism tray ── */}
-      <motion.div
-        className="flex items-end gap-5 px-6 py-4 rounded-2xl"
-        style={{
-          background: "rgba(0,0,0,0.35)",
-          border: "1px solid rgba(255,255,255,0.08)",
-          backdropFilter: "blur(16px)",
-          boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
-        }}
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-      >
-        {SOCIAL_LINKS.map((link, i) => (
-          <SocialButton key={link.id} {...link} index={i} />
-        ))}
-      </motion.div>
-    </div>
+    <>
+      {SOCIAL_LINKS.slice(0, 4).map((link, i) => (
+        <FloatingIcon
+          key={link.id}
+          {...link}
+          index={i}
+          position={POSITIONS[i]}
+        />
+      ))}
+    </>
   );
 }
