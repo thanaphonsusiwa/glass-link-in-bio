@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import VideoScrubber from "@/components/VideoScrubber";
+import ImageScrubber from "@/components/ImageScrubber";
 import CharacterStats from "@/components/CharacterStats";
 import FloatingSocialLinks from "@/components/FloatingSocialLinks";
 
@@ -17,8 +17,8 @@ export default function Home() {
        */}
       <div className="relative w-full max-w-[430px] h-full overflow-hidden bg-black">
 
-        {/* ── Video: full-screen, drag to spin ── */}
-        <VideoScrubber onProgress={setSpinPct} />
+        {/* ── Image sequence: shows frame 0 instantly, drag to spin ── */}
+        <ImageScrubber onProgress={setSpinPct} />
 
         {/* ── 4 app-style icons orbiting around the character ── */}
         <FloatingSocialLinks spinPct={spinPct} />
