@@ -1,39 +1,184 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #111111;
+  --background: #03091a;
+  --foreground: #ffffff;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-mono: var(--font-geist-mono);
 }
 
-*,
-*::before,
-*::after {
+*, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-html,
+html {
+  scroll-behavior: smooth;
+}
+
 body {
-  height: 100%;
-  width: 100%;
-  overflow: hidden;
-  background: #ffffff;
-  color: var(--foreground);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  background: #03091a;
+  color: #fff;
   -webkit-font-smoothing: antialiased;
 }
 
-.select-none {
-  -webkit-user-select: none;
-  user-select: none;
+::-webkit-scrollbar { width: 0; }
+a { text-decoration: none; }
+
+/* ── Animated background orbs ── */
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+  opacity: 0.45;
+  will-change: transform;
+}
+.orb-1 {
+  width: 520px; height: 520px;
+  background: radial-gradient(circle, #4338ca 0%, transparent 70%);
+  top: -140px; left: -120px;
+  animation: orb1 14s ease-in-out infinite alternate;
+}
+.orb-2 {
+  width: 480px; height: 480px;
+  background: radial-gradient(circle, #0f766e 0%, transparent 70%);
+  bottom: -100px; right: -100px;
+  animation: orb2 17s ease-in-out infinite alternate;
+}
+.orb-3 {
+  width: 380px; height: 380px;
+  background: radial-gradient(circle, #7c3aed 0%, transparent 70%);
+  top: 45%; left: 50%;
+  transform: translate(-50%, -50%);
+  animation: orb3 20s ease-in-out infinite alternate;
+}
+.orb-4 {
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, #0284c7 0%, transparent 70%);
+  top: 15%; right: -60px;
+  animation: orb4 11s ease-in-out infinite alternate;
+}
+@keyframes orb1 {
+  from { transform: translate(0,0); }
+  to   { transform: translate(70px, 90px); }
+}
+@keyframes orb2 {
+  from { transform: translate(0,0); }
+  to   { transform: translate(-70px,-50px); }
+}
+@keyframes orb3 {
+  from { transform: translate(-50%,-50%) scale(1) rotate(0deg); }
+  to   { transform: translate(-50%,-50%) scale(1.25) rotate(20deg); }
+}
+@keyframes orb4 {
+  from { transform: translate(0,0); }
+  to   { transform: translate(-50px,70px); }
 }
 
-::-webkit-scrollbar {
-  display: none;
+/* ── Glass utility ── */
+.glass {
+  background: rgba(255,255,255,0.07);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.12);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1);
 }
+
+/* ── Avatar glow ring ── */
+@keyframes avatar-glow {
+  0%,100% {
+    box-shadow: 0 0 0 2px rgba(255,255,255,0.12),
+                0 0 22px rgba(167,139,250,0.35),
+                0 0 50px rgba(99,102,241,0.15);
+  }
+  50% {
+    box-shadow: 0 0 0 2px rgba(255,255,255,0.22),
+                0 0 32px rgba(167,139,250,0.55),
+                0 0 70px rgba(99,102,241,0.28);
+  }
+}
+.avatar-wrap { animation: avatar-glow 3.5s ease-in-out infinite; }
+
+/* ── Light sweep on buttons ── */
+.btn-sweep { position: relative; overflow: hidden; }
+.btn-sweep::before {
+  content: '';
+  position: absolute;
+  top: 0; left: -160%;
+  width: 70%; height: 100%;
+  background: linear-gradient(
+    108deg,
+    transparent 30%,
+    rgba(255,255,255,0.09) 50%,
+    transparent 70%
+  );
+  transform: skewX(-18deg);
+  animation: light-sweep 5s ease-in-out infinite;
+  animation-delay: var(--sweep-delay, 0s);
+}
+@keyframes light-sweep {
+  0%, 55% { left: -160%; }
+  100%     { left: 220%; }
+}
+
+/* ── Link button interactions ── */
+.link-btn {
+  transition: transform 0.22s cubic-bezier(0.34,1.56,0.64,1),
+              background 0.2s ease,
+              box-shadow 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.link-btn:hover  {
+  transform: scale(1.025) translateY(-2px);
+  background: rgba(255,255,255,0.11);
+  border-color: rgba(255,255,255,0.2);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.18);
+}
+.link-btn:active { transform: scale(0.975); }
+
+.icon-btn {
+  transition: transform 0.22s cubic-bezier(0.34,1.56,0.64,1), background 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.icon-btn:hover  { transform: scale(1.1) translateY(-3px); background: rgba(255,255,255,0.14); }
+.icon-btn:active { transform: scale(0.9); }
+
+/* ── Entry animations ── */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-up {
+  opacity: 0;
+  animation: fade-up 0.65s cubic-bezier(0.22,1,0.36,1) forwards;
+}
+
+/* ── Reflection under social row ── */
+.reflect-wrap { position: relative; }
+.reflect-wrap::after {
+  content: '';
+  display: block;
+  height: 36px;
+  margin-top: 1px;
+  border-radius: 0 0 16px 16px;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.04) 0%, transparent 100%);
+  transform: scaleY(-1);
+  -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, transparent 100%);
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, transparent 100%);
+  filter: blur(3px);
+  pointer-events: none;
+}
+
+/* ── Verified badge pulse ── */
+@keyframes badge-pulse {
+  0%,100% { opacity: 1; }
+  50%      { opacity: 0.65; }
+}
+.badge-pulse { animation: badge-pulse 2.5s ease-in-out infinite; }

@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="description" content="Glass Thanaphon Susiwa — Content Creator" />
+  <title>Glass Thanaphon Susiwa</title>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ============================================================
+       BASE
+    ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      min-height: 100dvh;
+      overflow-x: hidden;
+      background: #03091a;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    ::-webkit-scrollbar { width: 0; }
+
+    /* ============================================================
+       ANIMATED MESH BACKGROUND
+    ============================================================ */
+    .bg-mesh {
+      position: fixed;
+      inset: 0;
+      background: #03091a;
+      overflow: hidden;
+      z-index: 0;
+    }
+
+    /* Four slow-drifting colour orbs */
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(90px);
+      opacity: 0.45;
+      will-change: transform;
+    }
+
+    .orb-1 {
+      width: 520px; height: 520px;
+      background: radial-gradient(circle, #4338ca 0%, transparent 70%);
+      top: -140px; left: -120px;
+      animation: orb1 14s ease-in-out infinite alternate;
+    }
+    .orb-2 {
+      width: 480px; height: 480px;
+      background: radial-gradient(circle, #0f766e 0%, transparent 70%);
+      bottom: -100px; right: -100px;
+      animation: orb2 17s ease-in-out infinite alternate;
+    }
+    .orb-3 {
+      width: 380px; height: 380px;
+      background: radial-gradient(circle, #7c3aed 0%, transparent 70%);
+      top: 45%; left: 50%;
+      transform: translate(-50%, -50%);
+      animation: orb3 20s ease-in-out infinite alternate;
+    }
+    .orb-4 {
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, #0284c7 0%, transparent 70%);
+      top: 15%; right: -60px;
+      animation: orb4 11s ease-in-out infinite alternate;
+    }
+
+    @keyframes orb1 {
+      from { transform: translate(0, 0); }
+      to   { transform: translate(70px, 90px); }
+    }
+    @keyframes orb2 {
+      from { transform: translate(0, 0); }
+      to   { transform: translate(-70px, -50px); }
+    }
+    @keyframes orb3 {
+      from { transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+      to   { transform: translate(-50%, -50%) scale(1.25) rotate(20deg); }
+    }
+    @keyframes orb4 {
+      from { transform: translate(0, 0); }
+      to   { transform: translate(-50px, 70px); }
+    }
+
+    /* Subtle noise texture to break up flat gradients */
+    .bg-mesh::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    /* ============================================================
+       GLASSMORPHISM UTILITIES
+    ============================================================ */
+
+    /* Standard glass panel */
+    .glass {
+      background: rgba(255, 255, 255, 0.07);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+
+    /* Slightly brighter for hover state */
+    .glass-hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.2);
+      box-shadow:
+        0 12px 40px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.18);
+    }
+
+    /* ============================================================
+       AVATAR GLOW RING
+    ============================================================ */
+    @keyframes avatar-glow {
+      0%, 100% {
+        box-shadow:
+          0 0 0 2px rgba(255, 255, 255, 0.12),
+          0 0 22px rgba(167, 139, 250, 0.35),
+          0 0 50px rgba(99, 102, 241, 0.15);
+      }
+      50% {
+        box-shadow:
+          0 0 0 2px rgba(255, 255, 255, 0.22),
+          0 0 32px rgba(167, 139, 250, 0.55),
+          0 0 70px rgba(99, 102, 241, 0.28);
+      }
+    }
+
+    .avatar-wrap {
+      animation: avatar-glow 3.5s ease-in-out infinite;
+      border-radius: 9999px;
+    }
+
+    /* ============================================================
+       LIGHT SWEEP ANIMATION (mirror glare on buttons)
+    ============================================================ */
+    .btn-sweep {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-sweep::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -160%;
+      width: 70%;
+      height: 100%;
+      background: linear-gradient(
+        108deg,
+        transparent      30%,
+        rgba(255,255,255,0.09) 50%,
+        transparent      70%
+      );
+      transform: skewX(-18deg);
+      animation: light-sweep 5s ease-in-out infinite;
+      animation-delay: var(--sweep-delay, 0s);
+    }
+
+    @keyframes light-sweep {
+      0%, 55% { left: -160%; }
+      100%     { left: 220%; }
+    }
+
+    /* ============================================================
+       LINK BUTTON INTERACTIONS
+    ============================================================ */
+    .link-btn {
+      transition:
+        transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1),
+        background 0.2s ease,
+        box-shadow 0.2s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .link-btn:hover  { transform: scale(1.025) translateY(-2px); }
+    .link-btn:hover  { background: rgba(255,255,255,0.11); border-color: rgba(255,255,255,0.2); }
+    .link-btn:active { transform: scale(0.975); }
+
+    .icon-btn {
+      transition:
+        transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1),
+        background 0.2s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .icon-btn:hover  { transform: scale(1.1) translateY(-3px); background: rgba(255,255,255,0.14); }
+    .icon-btn:active { transform: scale(0.9); }
+
+    /* ============================================================
+       ENTRY ANIMATIONS
+    ============================================================ */
+    @keyframes fade-up {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .fade-up {
+      opacity: 0;
+      animation: fade-up 0.65s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    /* ============================================================
+       REFLECTION EFFECT (glass floor illusion)
+    ============================================================ */
+    .reflect-wrap {
+      position: relative;
+    }
+
+    .reflect-wrap::after {
+      content: '';
+      display: block;
+      height: 36px;
+      margin-top: 1px;
+      border-radius: 0 0 16px 16px;
+      background: linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0.04) 0%,
+        transparent 100%
+      );
+      /* Flip vertically to simulate reflection */
+      transform: scaleY(-1);
+      -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, transparent 100%);
+      mask-image: linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, transparent 100%);
+      filter: blur(3px);
+      pointer-events: none;
+    }
+
+    /* ============================================================
+       DIVIDER
+    ============================================================ */
+    .glass-divider {
+      height: 1px;
+      background: linear-gradient(
+        to right,
+        transparent,
+        rgba(255,255,255,0.12) 30%,
+        rgba(255,255,255,0.12) 70%,
+        transparent
+      );
+    }
+
+    /* ============================================================
+       MISC
+    ============================================================ */
+    a { text-decoration: none; }
+
+    /* Verified badge pulse */
+    @keyframes badge-pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.7; }
+    }
+    .badge-pulse { animation: badge-pulse 2.5s ease-in-out infinite; }
+  </style>
+</head>
+
+<body>
+
+  <!-- ── Animated mesh background ─────────────────────────────── -->
+  <div class="bg-mesh" aria-hidden="true">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+    <div class="orb orb-4"></div>
+  </div>
+
+  <!-- ── Main content ──────────────────────────────────────────── -->
+  <main class="relative z-10 min-h-dvh flex items-center justify-center px-5 py-14">
+    <div class="w-full max-w-[390px] mx-auto flex flex-col gap-4">
+
+
+      <!-- ════════════════════════════════════════
+           PROFILE SECTION
+      ════════════════════════════════════════ -->
+      <section class="fade-up text-center flex flex-col items-center gap-4" style="animation-delay:0.08s;">
+
+        <!-- Avatar -->
+        <div class="relative">
+          <!-- Glow + glass ring -->
+          <div class="avatar-wrap glass p-[3px]" style="border-radius:9999px;">
+            <!--
+              Replace src with your actual photo URL.
+              Recommended size: 400×400px, square crop.
+            -->
+            <img
+              src="https://ui-avatars.com/api/?name=G&background=312e81&color=c7d2fe&size=400&bold=true&font-size=0.55&length=1"
+              alt="Glass Thanaphon Susiwa"
+              width="112"
+              height="112"
+              class="rounded-full object-cover block"
+              style="width:112px;height:112px;"
+            />
+          </div>
+
+          <!-- Verified dot -->
+          <div
+            class="badge-pulse absolute -bottom-0.5 -right-0.5 glass flex items-center justify-center"
+            style="width:26px;height:26px;border-radius:9999px;"
+            title="Verified"
+          >
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#93c5fd" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Name -->
+        <div>
+          <h1
+            class="text-[22px] font-bold text-white tracking-tight leading-tight"
+            style="text-shadow: 0 2px 12px rgba(0,0,0,0.5);"
+          >
+            Glass Thanaphon Susiwa
+          </h1>
+          <p class="text-[11px] font-medium tracking-[0.22em] uppercase text-white/40 mt-1">
+            Content Creator
+          </p>
+        </div>
+
+        <!-- Stat chips — Age / Height / Weight -->
+        <div class="flex items-center gap-2 flex-wrap justify-center">
+          <span class="glass px-3 py-1 rounded-full text-[11px] text-white/65 font-medium">อายุ 34</span>
+          <span class="glass px-[1px] py-1 w-[1px] text-white/15 select-none" aria-hidden="true">·</span>
+          <span class="glass px-3 py-1 rounded-full text-[11px] text-white/65 font-medium">173 cm</span>
+          <span class="glass px-[1px] py-1 w-[1px] text-white/15 select-none" aria-hidden="true">·</span>
+          <span class="glass px-3 py-1 rounded-full text-[11px] text-white/65 font-medium">84 kg</span>
+        </div>
+
+      </section>
+
+
+      <!-- ════════════════════════════════════════
+           PRIMARY LINKS
+      ════════════════════════════════════════ -->
+      <section class="fade-up flex flex-col gap-3" style="animation-delay:0.2s;">
+
+        <!-- TikTok -->
+        <a
+          href="https://www.tiktok.com/@glassthanaphon"
+          target="_blank" rel="noopener noreferrer"
+          class="link-btn btn-sweep glass rounded-2xl px-5 py-[14px] flex items-center gap-4"
+          style="--sweep-delay: 0s;"
+          aria-label="TikTok @glassthanaphon"
+        >
+          <!-- Icon container -->
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+               style="background:rgba(255,255,255,0.09);">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="rgba(255,255,255,0.9)">
+              <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.76a4.85 4.85 0 0 1-1.01-.07z"/>
+            </svg>
+          </div>
+          <!-- Label -->
+          <div class="flex-1 min-w-0">
+            <div class="text-white font-semibold text-[15px] leading-tight">TikTok</div>
+            <div class="text-white/40 text-xs mt-0.5 font-medium">@glassthanaphon</div>
+          </div>
+          <!-- Chevron -->
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0">
+            <path d="M9 18l6-6-6-6"/>
+          </svg>
+        </a>
+
+        <!-- Instagram -->
+        <a
+          href="https://www.instagram.com/glassthanaphon"
+          target="_blank" rel="noopener noreferrer"
+          class="link-btn btn-sweep glass rounded-2xl px-5 py-[14px] flex items-center gap-4"
+          style="--sweep-delay: 1.8s;"
+          aria-label="Instagram @glassthanaphon"
+        >
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+               style="background:rgba(255,255,255,0.09);">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="rgba(255,255,255,0.9)">
+              <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/>
+            </svg>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="text-white font-semibold text-[15px] leading-tight">Instagram</div>
+            <div class="text-white/40 text-xs mt-0.5 font-medium">@glassthanaphon</div>
+          </div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0">
+            <path d="M9 18l6-6-6-6"/>
+          </svg>
+        </a>
+
+        <!-- YouTube -->
+        <a
+          href="https://www.youtube.com/@glassthanaphon"
+          target="_blank" rel="noopener noreferrer"
+          class="link-btn btn-sweep glass rounded-2xl px-5 py-[14px] flex items-center gap-4"
+          style="--sweep-delay: 3.6s;"
+          aria-label="YouTube @glassthanaphon"
+        >
+          <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+               style="background:rgba(255,255,255,0.09);">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="rgba(255,255,255,0.9)">
+              <path d="M23.495 6.205a3.007 3.007 0 0 0-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 0 0 .527 6.205a31.247 31.247 0 0 0-.522 5.805 31.247 31.247 0 0 0 .522 5.783 3.007 3.007 0 0 0 2.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 0 0 2.088-2.088 31.247 31.247 0 0 0 .5-5.783 31.247 31.247 0 0 0-.5-5.805zM9.609 15.601V8.408l6.264 3.602z"/>
+            </svg>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="text-white font-semibold text-[15px] leading-tight">YouTube</div>
+            <div class="text-white/40 text-xs mt-0.5 font-medium">@glassthanaphon</div>
+          </div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0">
+            <path d="M9 18l6-6-6-6"/>
+          </svg>
+        </a>
+
+      </section>
+
+
+      <!-- ════════════════════════════════════════
+           SOCIAL ICON ROW (reflection effect applied)
+      ════════════════════════════════════════ -->
+      <section class="fade-up reflect-wrap" style="animation-delay:0.35s;">
+        <div class="glass rounded-2xl px-5 py-4">
+          <p class="text-[9px] font-semibold tracking-[0.25em] uppercase text-white/25 text-center mb-3.5">
+            Connect
+          </p>
+
+          <div class="flex items-center justify-center gap-3">
+
+            <!-- TikTok icon -->
+            <a href="https://www.tiktok.com/@glassthanaphon" target="_blank" rel="noopener noreferrer"
+               class="icon-btn glass flex items-center justify-center"
+               style="width:48px;height:48px;border-radius:14px;" aria-label="TikTok">
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="rgba(255,255,255,0.75)">
+                <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.76a4.85 4.85 0 0 1-1.01-.07z"/>
+              </svg>
+            </a>
+
+            <!-- Instagram icon -->
+            <a href="https://www.instagram.com/glassthanaphon" target="_blank" rel="noopener noreferrer"
+               class="icon-btn glass flex items-center justify-center"
+               style="width:48px;height:48px;border-radius:14px;" aria-label="Instagram">
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="rgba(255,255,255,0.75)">
+                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/>
+              </svg>
+            </a>
+
+            <!-- YouTube icon -->
+            <a href="https://www.youtube.com/@glassthanaphon" target="_blank" rel="noopener noreferrer"
+               class="icon-btn glass flex items-center justify-center"
+               style="width:48px;height:48px;border-radius:14px;" aria-label="YouTube">
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="rgba(255,255,255,0.75)">
+                <path d="M23.495 6.205a3.007 3.007 0 0 0-2.088-2.088c-1.87-.501-9.396-.501-9.396-.501s-7.507-.01-9.396.501A3.007 3.007 0 0 0 .527 6.205a31.247 31.247 0 0 0-.522 5.805 31.247 31.247 0 0 0 .522 5.783 3.007 3.007 0 0 0 2.088 2.088c1.868.502 9.396.502 9.396.502s7.506 0 9.396-.502a3.007 3.007 0 0 0 2.088-2.088 31.247 31.247 0 0 0 .5-5.783 31.247 31.247 0 0 0-.5-5.805zM9.609 15.601V8.408l6.264 3.602z"/>
+              </svg>
+            </a>
+
+            <!-- Facebook icon -->
+            <a href="https://www.facebook.com/glassthanaphon" target="_blank" rel="noopener noreferrer"
+               class="icon-btn glass flex items-center justify-center"
+               style="width:48px;height:48px;border-radius:14px;" aria-label="Facebook">
+              <svg width="19" height="19" viewBox="0 0 24 24" fill="rgba(255,255,255,0.75)">
+                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+              </svg>
+            </a>
+
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ════════════════════════════════════════
+           FOOTER
+      ════════════════════════════════════════ -->
+      <footer class="fade-up text-center pt-1 pb-2" style="animation-delay:0.45s;" aria-label="Footer">
+        <p class="text-[10px] text-white/18 tracking-widest font-medium select-none">
+          © 2026 Glass Thanaphon Susiwa
+        </p>
+      </footer>
+
+
+    </div>
+  </main>
+
+</body>
+</html>

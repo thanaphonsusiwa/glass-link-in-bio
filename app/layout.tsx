@@ -1,41 +1,39 @@
 import type { Metadata, Viewport } from "next";
-import { Geist_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const inter = Inter({
   subsets: ["latin"],
   display: "swap",
+  variable: "--font-inter",
 });
 
 export const metadata: Metadata = {
-  title: "Glass — Content Creator",
-  description: "Glass | Age 34 | 173cm | 84kg | Content Creator",
-  // Open Graph for link previews
+  title: "Glass Thanaphon Susiwa — Content Creator",
+  description: "Glass Thanaphon Susiwa | Content Creator | TikTok · Instagram · YouTube",
   openGraph: {
-    title: "Glass — Content Creator",
-    description: "Drag to spin. Tap to connect.",
+    title: "Glass Thanaphon Susiwa",
+    description: "Content Creator — Follow me on TikTok, Instagram & YouTube",
     type: "website",
   },
 };
 
-// Prevent zoom on mobile double-tap; force portrait on phones
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  themeColor: "#0A0A0F",
+  themeColor: "#03091a",
 };
 
 export default function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+}: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="th" className={`${geistMono.variable} h-full antialiased`}>
-      <body className="h-full bg-black overflow-hidden">{children}</body>
+    <html lang="th" className={`${inter.variable} antialiased`}>
+      <body style={{ fontFamily: "var(--font-inter), -apple-system, sans-serif" }}>
+        {children}
+      </body>
     </html>
   );
 }
